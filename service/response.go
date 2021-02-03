@@ -13,7 +13,13 @@ func (response *Response) GetSuccess(data interface{}, message string) Response 
 }
 
 // 失败返回
-func (response *Response) GetError(data interface{}, message string) Response {
-	res := Response{Data: data, Message: message, Code: 400}
+func (response *Response) GetError(message string) Response {
+	res := Response{Message: message, Code: 400}
+	return  res
+}
+
+// 指定状态返回
+func (response *Response) GetStatus(data interface{}, message string, code int16) Response {
+	res := Response{Data: data, Message: message, Code: code}
 	return  res
 }
