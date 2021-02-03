@@ -24,10 +24,28 @@ func (model *Product) before() orm.Ormer {
 	return newOrm
 }
 
-// 插入
-func (model *Product) Insert(data *Product) (int64, error)  {
+// 验证编号
+func (model *Product) CheckId(id int64)  (int64, error) {
 	newOrm := model.before()
-	return newOrm.Insert(data)
+	return newOrm.QueryTable(&model).Filter("id", id).Filter("is_del", 0).Count()
+}
+
+// 插入(单条)
+func (model *Product) Insert(insert *Product) (int64, error)  {
+	newOrm := model.before()
+	return newOrm.Insert(insert)
+}
+
+// 查询(单条)
+func (model *Product) Select(product *Product) error {
+	newOrm := model.before()
+	return newOrm.Read(product)
+}
+
+// 修改(单条)
+func (model *Product) Update(update *Product) (int64, error) {
+	newOrm := model.before()
+	return newOrm.Update(update, "Name", "Keyword", "Description", "Price", "OldPrice", "Image", "UpdatedAt")
 }
 
 func init()  {
