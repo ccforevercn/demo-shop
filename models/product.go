@@ -60,10 +60,9 @@ func (model *Product) Update(update *Product) (int64, error) {
 // 回收站
 func (model *Product) Recycle(id int64) error {
 	newOrm := model.before()
-	timeService := service.TimeService{}
 	_, err :=newOrm.QueryTable(&model).Filter("id", id).Filter("is_del", 0).Update(orm.Params{
 		"is_del": 1,
-		"updated_at": timeService.GetStringTime(),
+		"updated_at": service.GetStringTime(),
 	})
 	return err
 }

@@ -10,7 +10,6 @@ type ProductService struct {
 }
 
 var (
-	timeService = service.TimeService{}
 	product = models.Product{}
 	errorService = service.ErrorService{}
 )
@@ -28,8 +27,8 @@ func (productService *ProductService) Select(selects *models.Product) error {
 
 // 插入
 func (productService *ProductService) Insert(insert *models.Product) (int64, error) {
-	insert.CreatedAt = timeService.GetStringTime() // 设置添加时间
-	insert.UpdatedAt = timeService.GetStringTime() // 设置修改时间
+	insert.CreatedAt = service.GetStringTime() // 设置添加时间
+	insert.UpdatedAt = service.GetStringTime() // 设置修改时间
 	return product.Insert(insert) // 添加
 }
 
@@ -43,7 +42,7 @@ func (productService *ProductService) Update(update *models.Product) *service.Er
 	if err != nil {
 		return errorService.SetError(400, "修改失败")
 	}
-	update.UpdatedAt = timeService.GetStringTime() // 设置修改时间
+	update.UpdatedAt = service.GetStringTime() // 设置修改时间
 	_, err = product.Update(update)
 	if err != nil {
 		return errorService.SetError(400, "修改失败")
