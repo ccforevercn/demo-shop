@@ -12,6 +12,12 @@ func (response *Response) GetSuccess(data interface{}, message string) Response 
 	return  res
 }
 
+// 成功返回(没有参数)
+func (response *Response) GetSuccessMessage(message string) Response {
+	res := Response{Message: message, Code: 200}
+	return  res
+}
+
 // 失败返回
 func (response *Response) GetError(message string) Response {
 	res := Response{Message: message, Code: 400}

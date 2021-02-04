@@ -19,6 +19,11 @@ func (productService *ProductService) List()  {
 
 }
 
+// 查看
+func (productService *ProductService) Select(selects *models.Product) error {
+	return product.Select(selects)
+}
+
 // 插入
 func (productService *ProductService) Insert(insert *models.Product) (int64, error) {
 	insert.CreatedAt = timeService.GetStringTime() // 设置添加时间
@@ -27,7 +32,7 @@ func (productService *ProductService) Insert(insert *models.Product) (int64, err
 }
 
 // 修改
-func (productService ProductService) Update(update *models.Product) *service.ErrorService {
+func (productService *ProductService) Update(update *models.Product) *service.ErrorService {
 	update.IsDel = 0
 	count, err := product.CheckId(update.Id)  // 验证编号
 	if count == 0 {
@@ -40,6 +45,24 @@ func (productService ProductService) Update(update *models.Product) *service.Err
 	_, err = product.Update(update)
 	if err != nil {
 		return errorService.SetError(400, "修改失败")
+	}
+	return nil
+}
+
+// 回收站
+func (productService *ProductService) Recycle(id int64) *service.ErrorService {
+	err := product.Recycle(id)
+	if err != nil {
+		return errorService.SetError(400, "修改失败")
+	}
+	return nil
+}
+
+// 删除
+func (productService *ProductService) Delete(id int64) *service.ErrorService {
+	err := product.Delete(id)
+	if err != nil {
+		return errorService.SetError(400, "删除失败")
 	}
 	return nil
 }

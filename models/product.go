@@ -1,6 +1,7 @@
 package models
 
 import (
+	"demo-shop/service"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -46,6 +47,24 @@ func (model *Product) Select(product *Product) error {
 func (model *Product) Update(update *Product) (int64, error) {
 	newOrm := model.before()
 	return newOrm.Update(update, "Name", "Keyword", "Description", "Price", "OldPrice", "Image", "UpdatedAt")
+}
+
+// 回收站
+func (model *Product) Recycle(id int64) error {
+	newOrm := model.before()
+	timeService := service.TimeService{}
+	_, err :=newOrm.QueryTable(&model).Filter("id", id).Filter("is_del", 0).Update(orm.Params{
+		"is_del": 1,
+		"updated_at": timeService.GetStringTime(),
+	})
+	return err
+}
+
+// 删除(前提是在回收站)
+func (model *Product) Delete(id int64) error {
+	newOrm := model.before()
+	_, err :=newOrm.QueryTable(&model).Filter("id", id).Filter("is_del", 1).Delete()
+	return err
 }
 
 func init()  {

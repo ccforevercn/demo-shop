@@ -5,8 +5,10 @@ import (
 	"demo-shop/service"
 	serviceModel "demo-shop/service/models"
 	"demo-shop/validly"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strconv"
 )
 
 type ProductController struct {
@@ -31,6 +33,32 @@ func (controller *ProductController) Get()  {
 	controller.ServeJSON()
 }
 
+// 详情
+func (controller *ProductController) Details() {
+	string := fmt.Sprint(controller.Ctx.Input.Param(":id"))
+	id, err := strconv.ParseInt(string, 10, 64)
+	if err != nil {
+		controller.Data["json"] = response.GetError("参数错误")  // 添加错误提示
+		controller.ServeJSON()
+		return
+	}
+	product := models.Product{}
+	if id < 1 {
+		controller.Data["json"] = response.GetError("参数错误")  // 添加错误提示
+		controller.ServeJSON()
+		return
+	}
+	product.Id = id // 设置编号
+	error := productService.Select(&product) // 添加
+	if error != nil {
+		controller.Data["json"] = response.GetError(error.Error())
+		controller.ServeJSON()
+		return
+	}
+	controller.Data["json"] = response.GetSuccess(product, "详情")
+	controller.ServeJSON()
+}
+
 // 添加
 func (controller *ProductController) Post()  {
 	product := models.Product{}
@@ -50,7 +78,7 @@ func (controller *ProductController) Post()  {
 		return
 	}
 	product.Id = id // 重置编号为数据库编号
-	controller.Data["json"] = response.GetSuccess(product, "添加成功")
+	controller.Data["json"] = response.GetSuccessMessage("添加成功")
 	controller.ServeJSON()
 }
 
@@ -73,6 +101,36 @@ func (controller ProductController) Put()  {
 		controller.ServeJSON()
 		return
 	}
-	controller.Data["json"] = response.GetSuccess(product, "修改成功")
+	controller.Data["json"] = response.GetSuccessMessage("修改成功")
+	controller.ServeJSON()
+}
+
+// 回收站
+func (controller *ProductController) Recycle()  {
+	paramId := controller.Ctx.Request.PostForm.Get("id")
+	id, _  := strconv.ParseInt(paramId, 10, 64)
+	err := productService.Recycle(id)
+	if err != nil {
+		message, _ := err.Error()
+		controller.Data["json"] = response.GetError(message)
+		controller.ServeJSON()
+		return
+	}
+	controller.Data["json"] = response.GetSuccessMessage("添加成功")
+	controller.ServeJSON()
+}
+
+// 删除
+func (controller *ProductController) Delete()  {
+	paramId := controller.Ctx.Request.PostForm.Get("id")
+	id, _  := strconv.ParseInt(paramId, 10, 64)
+	err := productService.Delete(id)
+	if err != nil {
+		message, _ := err.Error()
+		controller.Data["json"] = response.GetError(message)
+		controller.ServeJSON()
+		return
+	}
+	controller.Data["json"] = response.GetSuccessMessage("删除成功")
 	controller.ServeJSON()
 }
