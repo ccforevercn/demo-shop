@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"demo-shop/models"
 	serviceModel "demo-shop/service/models"
 	"demo-shop/service/response"
+	"demo-shop/validly"
 	"fmt"
 	"github.com/astaxie/beego"
 	"strconv"
@@ -14,7 +16,7 @@ type CategoryController struct {
 
 var (
 	categoryService = serviceModel.CategoryService{}
-	//categoryValidly = validly.CategoryValidly{}
+	categoryValidly = validly.CategoryValidly{}
 )
 
 // 列表
@@ -34,5 +36,28 @@ func (controller *CategoryController) Get()  {
 	}
 	data := response.GetSuccess(category, "列表")
 	controller.Data["json"] = data
+	controller.ServeJSON()
+}
+
+// 添加
+func (controller CategoryController) Post()  {
+	category := models.Category{}
+	controller.ParseForm(&category)  // 获取参数
+	category.Id = 0  // 重置编号为0
+	err := categoryValidly.Insert(&category) // 验证参数
+	if err != nil {
+		message, _ := err.Error() // 参数错误提示
+		controller.Data["json"] = response.GetError(message)
+		controller.ServeJSON()
+		return
+	}
+	id, error := categoryService.Insert(&category) // 添加
+	if error != nil {
+		controller.Data["json"] = response.GetError(error.Error())  // 添加失败错误提示
+		controller.ServeJSON()
+		return
+	}
+	category.Id = id // 重置编号为数据库编号
+	controller.Data["json"] = response.GetSuccessMessage("添加成功")
 	controller.ServeJSON()
 }

@@ -25,3 +25,9 @@ func (model Category) List(name string, cid, offset, limit int64) ([]*Category, 
 	_, error := newOrm.QueryTable(&model).Filter("name", name).Filter("cid", cid).Filter("is_del", 0).Offset(offset).Limit(limit).All(&list)
 	return list, error
 }
+
+// 添加
+func (model Category) Insert(insert *Category) (int64, error) {
+	newOrm := Before()
+	return newOrm.Insert(insert)
+}
