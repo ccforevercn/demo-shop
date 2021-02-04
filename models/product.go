@@ -25,6 +25,14 @@ func (model *Product) before() orm.Ormer {
 	return newOrm
 }
 
+// 列表
+func (model *Product) List(name string, offset, limit int64) ([]*Product, error) {
+	list := []*Product{}
+	newOrm := model.before()
+	_, error := newOrm.QueryTable(&model).Filter("name", name).Filter("is_del", 0).Offset(offset).Limit(limit).All(&list)
+	return list, error
+}
+
 // 验证编号
 func (model *Product) CheckId(id int64)  (int64, error) {
 	newOrm := model.before()

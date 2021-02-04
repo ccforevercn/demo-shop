@@ -15,8 +15,10 @@ var (
 	errorService = service.ErrorService{}
 )
 
-func (productService *ProductService) List()  {
-
+// 列表
+func (productService *ProductService) List(name string, page, limit int64) ([]*models.Product, error) {
+	offset := service.Paging(page, limit) // 获取起始值
+	return product.List(name, offset, limit)
 }
 
 // 查看

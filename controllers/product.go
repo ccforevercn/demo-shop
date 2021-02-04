@@ -7,7 +7,6 @@ import (
 	"demo-shop/validly"
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"strconv"
 )
 
@@ -23,10 +22,17 @@ var (
 
 // 列表
 func (controller *ProductController) Get()  {
-	products := []*models.Product{}
-	o := orm.NewOrm()
-	o.Using("default")
-	o.QueryTable(models.Product{}).All(&products)
+	name := fmt.Sprint(controller.GetString("name"))
+	paramPage := fmt.Sprint(controller.GetString("page"))
+	page, _ := strconv.ParseInt(paramPage, 10, 64)
+	paramLimit := fmt.Sprint(controller.GetString("limit"))
+	limit, _ := strconv.ParseInt(paramLimit, 10, 64)
+	products, error := productService.List(name, page, limit)
+	if error != nil {
+		controller.Data["json"] = response.GetError(error.Error())
+		controller.ServeJSON()
+		return
+	}
 	response := &service.Response{}
 	data := response.GetSuccess(products, "列表")
 	controller.Data["json"] = data
