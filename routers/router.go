@@ -12,6 +12,7 @@ func init() {
 			beego.NSRouter("/product", &controllers.ProductController{}),
 			beego.NSRouter("/product/details/:id", &controllers.ProductController{}, "get:Details"),
 			beego.NSRouter("/product/recycle", &controllers.ProductController{}, "put:Recycle"),
+			beego.NSRouter("/category", &controllers.CategoryController{}),
 		),
 		beego.NSNamespace("/api",
 			beego.NSRouter("/", &controllers.MainController{}),
