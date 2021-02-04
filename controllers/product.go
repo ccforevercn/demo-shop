@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"demo-shop/models"
-	"demo-shop/service"
 	serviceModel "demo-shop/service/models"
+	"demo-shop/service/response"
 	"demo-shop/validly"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -15,7 +15,6 @@ type ProductController struct {
 }
 
 var (
-	response = service.Response{}
 	productService = serviceModel.ProductService{}
 	productValidly = validly.ProductValidly{}
 )
@@ -33,7 +32,6 @@ func (controller *ProductController) Get()  {
 		controller.ServeJSON()
 		return
 	}
-	response := &service.Response{}
 	data := response.GetSuccess(products, "列表")
 	controller.Data["json"] = data
 	controller.ServeJSON()
